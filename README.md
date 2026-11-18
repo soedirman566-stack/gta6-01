@@ -2,87 +2,76 @@
 [![rank](https://make.fun/badge/gta6-01/soedirman566-stack/gta6-01/rank.svg)](https://make.fun/bounty/gta6-01/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=gta6-01)
 [![reward](https://make.fun/badge/gta6-01/soedirman566-stack/gta6-01/reward.svg)](https://make.fun/bounty/gta6-01?utm_source=github&utm_medium=readme&utm_campaign=gta6-01)
 
-# CORAL CITY HEAT
+# Coral City Heat
 
-An original open-world crime game that runs entirely offline in a desktop
-browser. One courier, one corrupt coastal city, one long sunset: take jobs
-from Sal at the beach bar, steal cars, run a hot package across town, and
-lose the Coral City PD before the drop.
+An original open-world crime game that runs entirely in a desktop browser —
+no build step, no assets, no network. A hand-written raw-WebGL engine
+(matrix math, shaders, geometry builders and canvas-painted textures, all
+in `game/js/engine.js` and `game/js/world.js`) renders a procedural sunset
+coastal city: a grid of tower blocks with lit windows, palm-lined streets,
+a beach and an animated sea.
 
-Built with three.js (vendored — the game makes no network requests) and
-plain WebAudio synthesis for every sound. No assets, no build step.
+Coral City, 1987. Marina at the Pier Bar has a job: a crate walked off a
+truck at the North Depot. Steal what you need, pick it up against the
+clock, and deliver it to the Old Warehouse — quiet, with no heat.
 
-## The city
+## What's in the city
 
-A procedural sunset city generated from a seed: a 7×7 street grid with
-intersections, crosswalks and lane markings, ~150 buildings with lit
-windows, sidewalks, streetlights, palm trees, beach umbrellas, a sand
-beach and the ocean. Every building and car collides.
-
-## What you can do
-
-- **On foot** — third-person WASD movement with a mouse-orbit camera,
-  sprinting, and collision with the whole city.
-- **Drive anything** — press E next to any car to get in. Parked cars are
-  hot-wired; traffic cars are taken by pulling the driver out. Arcade
-  physics: acceleration, braking, reverse, steering that tightens with
-  speed, and a handbrake for sliding turns. Traffic AI cruises the grid,
-  turns at intersections and brakes for obstacles.
-- **Wanted system** — stealing, shooting, punching and running people
-  down earn up to 5 stars. Police cruisers spawn, chase, ram and box you
-  in with strobing light bars. Break their line of sight and the heat
-  cools. Get pinned and you're **BUSTED**; hit zero health and you're
-  **WASTED** — either way you respawn, poorer.
-- **Combat** — fists from the start (click or F), and a pistol once Sal
-  arms you: hitscan shots with muzzle flash, hit reactions, panicking
-  crowds.
-- **Story chain** — three linked missions with dialogue, a gold beacon
-  and minimap marker: meet Sal → grab a package across town against a
-  150-second clock → deliver it only once you've lost the heat, for
-  $1,500. Then free-roam, or run Sal's jobs again.
-- **HUD** — health bar, cash, wanted stars, objective with distance and
-  timer, speedometer, and a live top-down minimap with roads, traffic,
-  police blips and the objective marker.
-- **Sound** — synthesized engine hum, two-tone sirens, gunshots, punches,
-  crashes, reward jingles and a bassline groove. N mutes.
-- **Saves** — cash, story progress and position persist in localStorage;
-  Continue picks up where you left off.
+- **Driving** — arcade car physics (handbrake turns included), traffic AI
+  that follows the road grid, brakes and turns at intersections, parked
+  cars along every kerb.
+- **Car stealing** — hot-wire parked cars or yank drivers out of traffic;
+  every crime feeds the 0–5 star wanted system.
+- **Police** — Coral City PD spawns, chases, rams and pins you; break
+  line of sight to cool the heat, or get **BUSTED** / **WASTED** and wake
+  up at Coral General minus a fine.
+- **On foot** — third-person movement with mouse-orbit camera, sprint,
+  fists and a hitscan pistol, pedestrians who stroll the blocks and flee
+  gunfire and bad driving.
+- **A three-mission story chain** — meet Marina, run the timed depot
+  pickup (which makes you very hot), then deliver only once the stars
+  are gone. $1,500 a run, replayable, with free-roam in between.
+- **HUD & minimap** — health, cash, wanted stars, objective with live
+  distance and timer, speedometer, and a top-down minimap with roads,
+  traffic, flashing police blips and the objective marker.
+- **Sound, synthesized live** — engine hum, two-tone sirens, gunshots,
+  crashes, jingles and a sunset-funk loop. No audio files.
+- **Saving** — cash, mission progress, pistol and position persist in
+  `localStorage`; Continue picks up where you left off.
 
 ## Controls
 
-| Input | Action |
+| Keys | Action |
 | --- | --- |
-| WASD | Move / drive |
-| Mouse | Orbit camera (click the game to lock the pointer) |
+| WASD / arrows | Move / drive |
+| Mouse | Camera (click the game to lock the pointer) |
 | Shift | Sprint |
-| E | Enter / exit car, advance dialogue |
-| Mouse click | Punch / shoot |
-| F | Punch |
+| E | Enter/exit car, talk, interact |
+| Mouse click | Punch or shoot |
+| 1 / 2 | Fists / pistol |
 | Space | Handbrake |
 | P | Pause |
 | N | Mute |
 
 ## Run it
 
-The game is static files — serve the folder any way you like:
-
 ```sh
-node serve.ts 8377
-# open http://localhost:8377/game/
+node serve.ts          # then open http://localhost:8377/
 ```
 
-or just open `game/index.html` through any static host. Deterministic
-screenshot scenes live at `game/?shot=vista|drive|chase|mission&seed=1`
-(see `shots.json`).
+Or serve the `game/` folder with any static file server and open
+`index.html`. Deterministic screenshot scenes live in `shots.json`
+(e.g. `game/index.html?shot=chase&seed=1`).
 
-## Entry plumbing
+## Entry layout
 
-`main.ts` is the make.fun program entrypoint: it copies `game/` and
-`screenshots/` into `MAKEFUN_OUTPUT_DIR` (default `/output`) and writes
-`dossier.json` using the vendored `vendor/makefun-game.ts` builder.
-`vendor/three.module.js` inside `game/` is the three.js r160 module
-build, loaded through an import map.
+- `main.ts` — copies `game/` + `screenshots/` to the output directory and
+  writes `dossier.json` with the vendored make.fun library.
+- `game/` — the whole game: `index.html`, `js/engine.js` (WebGL engine),
+  `js/world.js` (city generation), `js/audio.js` (synth), `js/game.js`
+  (gameplay).
+- `screenshots/` — the four staged scenes listed in `shots.json`.
+- `vendor/makefun-game.ts` — the competition's dossier library, vendored
+  unchanged as supplied.
 
-## License
-
-MIT — see `LICENSE`.
+MIT licensed — see `LICENSE`.
